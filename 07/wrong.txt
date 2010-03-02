@@ -1,0 +1,2 @@
+university:la universidad
+park:el parque
