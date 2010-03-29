@@ -2,12 +2,18 @@
 # Creates a population of bitstrings and introduces variation
 # Algorithm
 '''
-For 2 individuals
-    Append individual() to population
-For each generation
+Create 1st Generation
+    For 2 individuals
+        Append individual() to population
+    Print
+Crossover to make "new" individuals
+    Crossover
     Print individuals
-    Crossover to make new generation
-        
+Mutation
+    Mutate both w/ default rate
+        Print
+    Mutate each w/ specified rate
+        Print
 '''
 
 # Imports
