@@ -74,6 +74,7 @@ def move(num, s1, s2):
         del tableau[s1][len(tableau[s1])-1]# Remove last card from the first list
     # If run is created, update score
     ## Starting at King
+    k = 0 # Initialize index of king
     for i in range(0, len(tableau[s2])):
         if tableau[s2][i].get_rank() == 13:
             k = i
@@ -246,7 +247,7 @@ def valid(num, s1, s2):
     # Selected cards must be a run
         for i in range(1, len(tempStack)):
     ## each card's value must be less than that of previous card
-            if tempStack[i].get_rank() < tempStack[i-1].get_rank():
+            if tempStack[i].get_rank() == (tempStack[i-1].get_rank() - 1):
                 pass
             else:
                 validBool = False
