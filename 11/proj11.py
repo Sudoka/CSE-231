@@ -1,6 +1,8 @@
 # Project 11
 # Evolves a robot controller to follow trails
-# To Do: ga.run()
+# To Do:
+## refactor to use individual.fitness var 
+## routlette wheel
 
 # Algorithm
 '''
@@ -40,12 +42,53 @@ class ga(object):
         self.offspringList = []
         self.nextGenList = []
 
+    def fitnessProportionateSelection(self, null, k, pool):
+        '''
+        Select individuals proportional to their fitness.
+
+        Arguments: null (for interchangability), num selected, pool to draw from
+        Returns: indecies of first k individuals selected
+        Algorithm:
+            Find totalFitness of pool
+            For k individuals
+                init
+                    randomValue b/w 0 and totalFitness
+                    sumFitness to 0
+                    individualList
+                For each individual
+                    add fitness to sumFitness
+                    if sumFitness >= randomValue
+                        save individual as selected
+        '''
+        # Find totalFitness
+        totalFitness = 0
+        for i in pool:
+            totalFitness += i.fitness
+        # Select k individuals
+        indexList = []
+        while len(indexList) < k:
+            # Setup
+            random.seed()
+            randomValue = random.randint(0,totalFitness)
+            sumFitness = 0
+            # Select
+            for j in range(0,len(pool)):
+                sumFitness += pool[j].fitness
+                if sumFitness >= randomValue:
+                    if j not in indexList: # Unique
+                        indexList.append(j)
+                        break
+                    else:
+                        continue
+
+        return indexList
+
     def tournamentSelection(self, n, k, pool):
         '''
         Selects individuals for crossover based on fitness.
 
         Arguments: sample size, num individuals selected, pool to draw from
-        Returns: indecies of k fittest individuals
+        Returns: list of indecies of k fittest individuals
         Algorithm:
             Randomly select n individuals
                 Generate n random indexes
@@ -62,7 +105,7 @@ class ga(object):
         #pdb.set_trace()
         indTupList = []
         for i in indexSet:
-            indTupList.append((pool[i].evalFitness(), i))# Append (fit, index)
+            indTupList.append((pool[i].fitness, i))# Append (fit, index)
         # Sort by fitness
         indTupList.sort()
         indTupList = indTupList[::-1] # Highs first
@@ -103,8 +146,8 @@ class ga(object):
             print 'Creating generation %d.'%(i+1)
         ## Create offspring
             while len(self.offspringList) != self.offspringPopSize:
-                parent1 = self.tournamentSelection(2,1,self.popList)
-                parent2 = self.tournamentSelection(2,1,self.popList)
+                parent1 = self.fitnessProportionateSelection(2,1,self.popList)
+                parent2 = self.fitnessProportionateSelection(2,1,self.popList)
                 addTup = self.popList[parent1[0]].crossover(self.popList[parent2[0]])
                 self.offspringList.append(addTup[0])
                 self.offspringList.append(addTup[1])
@@ -118,16 +161,16 @@ class ga(object):
                 self.popList.append(self.offspringList.pop())
         ## Create next generation
             for i in range(0,self.popSize):
-                self.nextGenList.append(self.popList[self.tournamentSelection(2,1,self.popList)[0]])
+                self.nextGenList.append(self.popList[self.fitnessProportionateSelection(2,1,self.popList)[0]])
         ## Overwrite
             [self.popList.pop() for i in range(0,len(self.popList))]
             [self.popList.append(self.nextGenList.pop()) for i in range(0,len(self.nextGenList))]
         ## Find fittest individual
             fitList = [0, 0]
             for i in range(0, len(self.popList)):
-                if self.popList[i].evalFitness() > fitList[1]:
+                if self.popList[i].fitness > fitList[1]:
                     fitList[0] = i
-                    fitList[1] = self.popList[i].evalFitness()
+                    fitList[1] = self.popList[i].fitness
         ## Print fittest matrix to a file
             writeFile = open('fittest.txt', 'a')
             writeObj = str(self.popList[fitList[0]])+'\n'
@@ -149,6 +192,7 @@ class individual(object):
             If matrix is empty
                 Append 6 numbers
                     Random -5 to 5
+            Fitness
         '''
         # Create
         self.matrix = matrix
@@ -157,10 +201,12 @@ class individual(object):
         ## Append
             random.seed()
             self.matrix = [random.randint(-5,5) for i in range(0,6)]
+        # Fitness
+        self.fitness = self.evalFitness()
 
     def __str__(self):
         '''Prints the matrix and its fitness.'''
-        return 'Matrix: '+str(self.matrix)+'\tFitness: '+ str(self.evalFitness())
+        return 'Matrix: '+str(self.matrix)+'\tFitness: '+ str(self.fitness)
 
     def __repr__(self):
         '''Prints the matrix.'''
