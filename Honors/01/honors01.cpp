@@ -1,10 +1,11 @@
 // GA Project 01
-// Create a bitarray and evaluate its fitness using C++ and classes
+// Create a bitstring and evaluate its fitness using C++ and classes
 
 /* Includes */
+#include <cstring>
 #include <iostream>
-#include <list>
 #include <stdlib.h>
+#include <string>
 #include <time.h>
 
 /* Using */
@@ -14,10 +15,10 @@ using namespace std;
 class individual
 {
     public:
-        int bitarray [100];
+        string bitstring;
         int fitness;
   
-        individual (string);
+        individual();
 
         friend ostream &operator<<(ostream &stream, individual ob);
     
@@ -25,20 +26,27 @@ class individual
         {
             string temp;
             srand(time(NULL));
-            int i;
-            for(int i = 0; i < 99; i++)
+            for(int i = 0; i < 100; i++)
             {
-                temp += (rand() % 1);
+                int rChar = (rand() % 2);
+                if (rChar == 0)
+                {
+                    temp += "0";
+                }
+                else if (rChar == 1)
+                {
+                    temp += "1";
+                }
             }
             return temp;
         }
     
-        float genFitness()
+        int genFitness()
         {
-            float count;
-            for (int i = 0; i < 99; i++)
+            int count = 0;
+            for (int i = 0; i < bitstring.length(); i++)
             {
-                if (bitarray[i] == 1)
+                if (bitstring[i] == '1')
                 {
                     count++;
                 }
@@ -47,18 +55,15 @@ class individual
         }
 };
 
-individual::individual (string bitarray = "")
+individual::individual()
 {
-    if (bitarray == "")
-    {
-        bitarray = genBitstring();
-    }
+    bitstring = genBitstring();
     fitness = genFitness();
 }
 
 ostream &operator<<(ostream &stream, individual ob)
 {
-    stream << "Bitstring: " << ob.bitarray << "\nFitness: " << ob.fitness << "\n\n";
+    stream << "Bitstring: " << ob.bitstring << "\nFitness: " << ob.fitness << "\n\n";
     return stream;
 }
 
