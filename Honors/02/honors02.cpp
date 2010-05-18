@@ -14,7 +14,6 @@ For each individual
 #include <stdlib.h>
 #include <string>
 #include <sys/time.h>
-#include <time.h>
 
 /* Using */
 using namespace std;
@@ -31,9 +30,6 @@ class individual{
 
         string genBitstring(){
             string temp;
-            timeval t1;// To seed rand(), time(NULL)'s resolution is too low
-            gettimeofday(&t1, NULL);// Microsecond resolution
-            srand(t1.tv_usec * t1.tv_sec);
             for(int i = 0; i < 100; i++){
                 int rChar = (rand() % 2);
                 if (rChar == 0){
@@ -70,6 +66,10 @@ ostream &operator<<(ostream &stream, individual ob){
 
 /* Main */
 int main(){
+    //Seed RNG
+    timeval t1;// To seed rand()
+    gettimeofday(&t1, NULL);// Microsecond resolution
+    srand(t1.tv_usec * t1.tv_sec);
     individual population [100];
     for (int i = 0; i < 100; i++){
         population[i] = individual();
